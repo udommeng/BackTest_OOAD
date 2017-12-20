@@ -14,15 +14,18 @@ namespace GF.BackTesting {
         }
 
         public override void Start() {
-            base.Start();
+            RaiseSeedPrices();
+            RaisePricesFromCsv();
+            RaiseStopper();
+        }
 
+        private void RaisePricesFromCsv() {
             // read csv file line-by-line.
             using (var reader = new StreamReader(fileName)) {
                 string s;
 
                 reader.ReadLine();
                 while ((s = reader.ReadLine()) != null) {
-                    //ตัดข้อความที่มีเครื่องหมาย , และ ช่องว่า ออกมา พร้อมทั้ง ตัดถ้ข้อความที่เป็นช่องว่างออก  RemoveEmptyEntries
                     var data = s.Split(new char[] { ',', ' ' },
                        StringSplitOptions.RemoveEmptyEntries);
 

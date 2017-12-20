@@ -1,30 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using Xunit;
 
 namespace GF.BackTesting.Facts {
     public class InMemoryPriceReaderFact {
 
         [Fact]
-        public void NoSeedPrice() {
+        public void NoSeedPrice_GetOnlyNullNewPriceItem() {
             var reader = new InMemoryPriceReader();
-            decimal price = 0m;
+            PriceItem price = null;
             int count = 0;
 
-            reader.AddSeedPrice(last: 15.0m);
             reader.NewPrice += (sender, e) => {
-                price = e.Last;
+                price = e.NewPrice;
                 count++;
             };
 
             reader.Start();
 
             Assert.Equal(1, count);
-            Assert.Equal(15.0m, price);
+            Assert.Null(price);
         }
+
 
         [Fact]
         public void SinglePrice() {
@@ -33,14 +29,15 @@ namespace GF.BackTesting.Facts {
 
             reader.AddSeedPrice(last: 15.0m);
             reader.NewPrice += (sender, e) => {
-                price = e.Last;
+                if (e.NewPrice != null) {
+                    price = e.NewPrice.Last;
+                }
             };
 
             reader.Start();
 
             Assert.Equal(15.0m, price);
         }
-
 
         [Fact]
         public void ThreePrices() {
@@ -53,8 +50,10 @@ namespace GF.BackTesting.Facts {
             reader.AddSeedPrice(last: 14.0m);
 
             reader.NewPrice += (sender, e) => {
-                price = e.Last;
-                count++;
+                if (e.NewPrice != null) {
+                    price = e.NewPrice.Last;
+                    count++;
+                }
             };
 
             reader.Start();
@@ -62,5 +61,6 @@ namespace GF.BackTesting.Facts {
             Assert.Equal(3, count);
             Assert.Equal(14.0m, price);
         }
+
     }
 }

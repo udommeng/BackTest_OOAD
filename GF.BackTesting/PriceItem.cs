@@ -11,5 +11,7 @@ namespace GF.BackTesting {
         public decimal Last { get; set; }
         public decimal Bid { get; set; } // ราคาเสนอซื้อ
         public decimal Offer { get; set; } // ราคาเสนอขาย
+
+
     }
 }
